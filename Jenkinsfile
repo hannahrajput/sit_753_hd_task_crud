@@ -21,12 +21,13 @@ pipeline {
             steps {
                 echo 'Running pytest...'
                 script {
-                    sh 'python -m pip install --upgrade pip'
-                    sh 'pip install -r requirements.txt'
-                    sh 'python -m pytest tests/ --disable-warnings'
+                    sh """
+                    docker run --rm -v \$(pwd):/app -w /app python:3.11 bash -c "pip install -r requirements.txt && pytest tests/ --disable-warnings"
+                    """
                 }
             }
         }
+
 
         stage('Code Quality') {
             steps {

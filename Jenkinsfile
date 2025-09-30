@@ -42,12 +42,8 @@ pipeline {
                         fi
 
                         # Run SonarScanner using full path
-                        java -jar sonar-scanner-7.2.0.5079-linux-x64/lib/sonar-scanner-cli-7.2.0.5079.jar \
-                        -Dsonar.login=$SONAR_TOKEN \
-                        -Dsonar.projectKey=FlaskCRUD \
-                        -Dsonar.organization=<your_org_name> \
-                        -Dsonar.sources=. \
-                        -Dsonar.host.url=https://sonarcloud.io
+                        java -jar sonar-scanner-7.2.0.5079-linux-x64/lib/sonar-scanner-cli-7.2.0.5079.jar
+                         
                     '''
                 }
             }

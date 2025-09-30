@@ -22,12 +22,9 @@ pipeline {
                 echo 'Running pytest...'
                 script {
                     sh '''
-                        python3 -m venv venv
-                        source venv/bin/activate
-                        python3 -m pip install --upgrade pip
-                        pip install -r requirements.txt
-                        python3 -m pytest tests/ --disable-warnings
-                    '''
+                    python3 -m venv venv
+                    bash -c "source venv/bin/activate && python3 -m pip install --upgrade pip && pip install -r requirements.txt && python3 -m pytest tests/ --disable-warnings"
+                '''
 
                 }
             }

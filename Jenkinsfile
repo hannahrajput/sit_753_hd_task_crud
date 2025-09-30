@@ -58,7 +58,7 @@ pipeline {
                         python3 -m venv venv
                         . venv/bin/activate
                         pip install bandit
-                        bandit -r . -x venv,tests -ll
+                        bandit -r flask_crud_app -x flask_crud_app/venv -ll
                     '''
                 }
             }

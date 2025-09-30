@@ -12,7 +12,7 @@ pipeline {
             steps {
                 echo 'Building Python artefact...'
                 script {
-                    sh 'zip -r flask_crud_app.zip . -x "tests/*" "*.git*" "venv/*"'
+                    sh 'zip -r flask_crud_app.zip . -x "tests/*" "*.git*" "venv/*" ".pytest_cache/*" "instance/*" "__pycache__/*" "sonar-scanner-*/**"'
                 }
             }
         }
@@ -43,7 +43,7 @@ pipeline {
 
                         # Run SonarScanner using full path
                         java -jar sonar-scanner-7.2.0.5079-linux-x64/lib/sonar-scanner-cli-7.2.0.5079.jar
-                         
+
                     '''
                 }
             }

@@ -12,7 +12,6 @@ pipeline {
             steps {
                 echo 'Building Python artefact...'
                 script {
-                    // Create a ZIP file of your app
                     sh 'zip -r flask_crud_app.zip . -x "tests/*" "*.git*"'
                 }
             }

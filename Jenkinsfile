@@ -30,7 +30,7 @@ pipeline {
 
         stage('Code Quality') {
             steps {
-                withCredentials([string(credentialsId: 'SONAR_AUTH_TOKEN', variable: 'SONAR_AUTH_TOKEN')]) {
+                withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
                     sh '''
                         # Download SonarScanner CLI if not already downloaded
                         if [ ! -f sonar-scanner-cli-7.2.0.5079-linux-x64.zip ]; then

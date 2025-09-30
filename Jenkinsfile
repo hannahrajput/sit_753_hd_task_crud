@@ -12,7 +12,7 @@ pipeline {
             steps {
                 echo 'Building Python artefact...'
                 script {
-                    sh 'zip -r flask_crud_app.zip . -x "tests/*" "*.git*" "venv/*" ".pytest_cache/*" "instance/*" "__pycache__/*" "sonar-scanner-*/**"'
+                    sh 'zip -r flask_crud_app.zip . -x "tests/*" "*.git*" "venv/*" ".pytest_cache/*" "instance/*" "__pycache__/*" "sonar-scanner-*/**" ".scannerwork/*"'
                 }
             }
         }
@@ -67,24 +67,32 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                echo 'Starting Flask app in test environment...'
-                script {
-                    sh 'python app.py &'
+                withCredentials([string(credentialsId: 'HEROKU_API_KEY', variable: 'HEROKU_API_KEY')]) {
+                    sh """
+                    git remote add heroku https://heroku:${HEROKU_API_KEY}@git.heroku.com/my-flask-crud-app.git
+                    git push heroku HEAD:main -f
+                    """
                 }
             }
         }
 
+
+
         stage('Release') {
             steps {
-                echo 'Simulating release step (manual promotion or ZIP deploy)...'
+                echo 'Release stage: App is live on Heroku!'
             }
         }
 
         stage('Monitoring') {
             steps {
-                echo 'Checking app health...'
+                echo 'Checking app health on Heroku...'
                 script {
-                    def status = sh(script: 'curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/', returnStdout: true).trim()
+                    def status = sh(
+                        script: "curl -s -o /dev/null -w \"%{http_code}\" https://my-flask-crud-app.herokuapp.com/",
+                        returnStdout: true
+                    ).trim()
+                    
                     if (status != '200') {
                         error "App is down! Status code: ${status}"
                     } else {
@@ -93,6 +101,7 @@ pipeline {
                 }
             }
         }
+
     }
 
     post {

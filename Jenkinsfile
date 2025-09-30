@@ -54,8 +54,13 @@ pipeline {
             steps {
                 echo 'Running security scan (bandit)...'
                 script {
-                    sh 'pip install bandit'
-                    sh 'bandit -r . -ll'
+                    sh '''
+                        python3 -m venv venv
+                        . venv/bin/activate
+                        pip install --upgrade pip
+                        pip install bandit
+                        bandit -r . -ll
+                    '''
                 }
             }
         }

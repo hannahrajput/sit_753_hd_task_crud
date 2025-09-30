@@ -58,7 +58,7 @@ pipeline {
                         python3 -m venv venv
                         . venv/bin/activate
                         pip install bandit
-                        bandit -r . -ll
+                        bandit -r . -x venv,tests -ll
                     '''
                 }
             }

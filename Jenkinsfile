@@ -35,13 +35,24 @@ pipeline {
                 withCredentials([string(credentialsId: "${SONAR_TOKEN_ID}", variable: 'SONAR_TOKEN')]) {
                     echo 'Running SonarCloud Analysis...'
                     sh '''
-                        # Ensure sonar-project.properties exists in repo root
-                        java -jar sonar-scanner-cli.jar \
-                        -Dsonar.login=$SONAR_TOKEN
+                        # Download SonarScanner CLI if not already downloaded
+                        if [ ! -f sonar-scanner-cli-7.2.0.5079-linux-x64.zip ]; then
+                            curl -sSLo sonar-scanner-cli-7.2.0.5079-linux-x64.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-7.2.0.5079-linux-x64.zip
+                            unzip -o sonar-scanner-cli-7.2.0.5079-linux-x64.zip
+                        fi
+
+                        # Run SonarScanner using full path
+                        java -jar sonar-scanner-7.2.0.5079-linux-x64/lib/sonar-scanner-cli-7.2.0.5079.jar \
+                        -Dsonar.login=$SONAR_TOKEN \
+                        -Dsonar.projectKey=FlaskCRUD \
+                        -Dsonar.organization=<your_org_name> \
+                        -Dsonar.sources=. \
+                        -Dsonar.host.url=https://sonarcloud.io
                     '''
                 }
             }
         }
+
 
         stage('Security') {
             steps {

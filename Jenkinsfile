@@ -30,13 +30,21 @@ pipeline {
 
         stage('Code Quality') {
             steps {
-                echo 'Running SonarQube analysis...'
-                withSonarQubeEnv('SonarQube') {
-                    sh "docker run --rm -v \$(pwd):/app -w /app sonarsource/sonar-scanner-cli \
+                withCredentials([string(credentialsId: 'SONAR_AUTH_TOKEN', variable: 'SONAR_AUTH_TOKEN')]) {
+                    sh '''
+                        # Download SonarScanner CLI if not already downloaded
+                        if [ ! -f sonar-scanner-cli-7.2.0.5079-linux-x64.zip ]; then
+                            curl -sSLo sonar-scanner-cli-7.2.0.5079-linux-x64.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-7.2.0.5079-linux-x64.zip
+                            unzip -o sonar-scanner-cli-7.2.0.5079-linux-x64.zip
+                        fi
+
+                        # Run SonarScanner with auth token
+                        java -jar sonar-scanner-7.2.0.5079-linux-x64/lib/sonar-scanner-cli-7.2.0.5079.jar \
                         -Dsonar.projectKey=FlaskCRUD \
                         -Dsonar.sources=. \
-                        -Dsonar.host.url=${SONAR_HOST_URL} \
-                        -Dsonar.login=${SONAR_AUTH_TOKEN}"
+                        -Dsonar.host.url=http://sonarqube:9000 \
+                        -Dsonar.login=$SONAR_AUTH_TOKEN
+                    '''
                 }
             }
         }

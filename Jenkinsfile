@@ -21,9 +21,9 @@ pipeline {
             steps {
                 echo 'Running pytest...'
                 script {
-                    sh 'python -m pip install --upgrade pip'
+                    sh 'python3 -m pip install --upgrade pip'
                     sh 'pip install -r requirements.txt'
-                    sh 'python -m pytest tests/ --disable-warnings'
+                    sh 'python3 -m pytest tests/ --disable-warnings'
                 }
             }
         }

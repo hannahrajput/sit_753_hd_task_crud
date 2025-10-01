@@ -12,7 +12,7 @@ pipeline {
             steps {
                 echo 'Building Python artefact...'
                 script {
-                    sh 'zip -r flask_crud_app.zip . -x "tests/*" "*.git*" "venv/*" ".pytest_cache/*" "instance/*" "__pycache__/*" "sonar-scanner-*/**" ".scannerwork/*" "temp/venv/*"'
+                    sh 'zip -r flask_crud_app.zip . -x "tests/*" "*.git*" "venv/*" ".pytest_cache/*" "instance/*" "__pycache__/*" "sonar-scanner-*/**" ".scannerwork/*" "temp_venv/*"'
                 }
             }
         }

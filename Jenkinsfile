@@ -100,7 +100,7 @@ pipeline {
             steps {
                 echo 'Monitoring application...'
                 script {
-                    def appUrl = "https://my-flask-crud-app.herokuapp.com"
+                    def appUrl = "https://my-flask-crud-app-d8feeab41fcb.herokuapp.com/"
 
                     def statusCode = sh(returnStdout: true, script: "curl -o /dev/null -s -w '%{http_code}' ${appUrl}").trim()
                     if (statusCode == "200") {

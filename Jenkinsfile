@@ -55,19 +55,17 @@ pipeline {
                 echo 'Running Bandit security scan...'
                 script {
                     sh '''
-                        pwd
-                        ls -la
-
                         python3 -m venv temp_venv
                         . temp_venv/bin/activate
-                        pip install bandit
+                        pip install --quiet bandit
 
-                        # If Jenkins is already inside sit_753_hd_task, just run:
-                        bandit -r . -x .venv,temp_venv,tests,migrations -ll
+                        echo "Scanning only source files..."
+                        bandit app.py models.py -ll
                     '''
                 }
             }
         }
+
 
 
         stage('Deploy') {

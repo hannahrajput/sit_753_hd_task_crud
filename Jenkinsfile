@@ -52,17 +52,21 @@ pipeline {
 
         stage('Security') {
             steps {
-                echo 'Running security scan (bandit)...'
+                echo 'Running Bandit security scan...'
                 script {
                     sh '''
-                        python3 -m venv venv
-                        . venv/bin/activate
+                        # Create a temporary virtual environment for Bandit
+                        python3 -m venv temp_venv
+                        . temp_venv/bin/activate
                         pip install bandit
-                        bandit -r flask_crud_app -x flask_crud_app/venv -ll
+
+                        # Run Bandit on your project folder, excluding the virtual environment
+                        bandit -r ./sit_753_hd_task -x ./sit_753_hd_task/.venv -ll
                     '''
                 }
             }
         }
+
 
         stage('Deploy') {
             steps {
@@ -83,6 +87,11 @@ pipeline {
             steps {
                 echo 'Releasing application...'
                 script {
+                    sh '''
+                        git config user.email "jenkins@example.com"
+                        git config user.name "Jenkins CI"
+                    '''
+
                     def commitHash = sh(returnStdout: true, script: "git rev-parse --short HEAD").trim()
                     def version = new Date().format("yyyyMMdd-HHmmss") + "-" + commitHash
 
@@ -95,6 +104,7 @@ pipeline {
                 }
             }
         }
+
 
 
         stage('Monitoring') {

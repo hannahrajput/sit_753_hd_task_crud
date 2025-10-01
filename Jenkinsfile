@@ -55,12 +55,10 @@ pipeline {
                 echo 'Running Bandit security scan...'
                 script {
                     sh '''
-                        # Create a temporary virtual environment for Bandit
                         python3 -m venv temp_venv
                         . temp_venv/bin/activate
                         pip install bandit
 
-                        # Run Bandit on your project folder, excluding the virtual environment
                         bandit -r ./sit_753_hd_task -x ./sit_753_hd_task/.venv -ll
                     '''
                 }
@@ -85,22 +83,19 @@ pipeline {
 
         stage('Release') {
             steps {
-                echo 'Releasing application...'
-                script {
-                    sh '''
-                        git config user.email "jenkins@example.com"
-                        git config user.name "Jenkins CI"
-                    '''
-
-                    def commitHash = sh(returnStdout: true, script: "git rev-parse --short HEAD").trim()
-                    def version = new Date().format("yyyyMMdd-HHmmss") + "-" + commitHash
-
-                    sh "echo ${version} > version.txt"
-
-                    sh "git tag -a v${version} -m 'Release ${version}'"
-                    sh "git push origin v${version}"
-
-                    echo "Released version: ${version}"
+                withCredentials([string(credentialsId: 'GITHUB_TOKEN', variable: 'GITHUB_TOKEN')]) {
+                    script {
+                        sh '''
+                            git config user.email "jenkins@example.com"
+                            git config user.name "Jenkins CI"
+                            git rev-parse --short HEAD
+                            TAG="v$(date +%Y%m%d-%H%M%S)-$(git rev-parse --short HEAD)"
+                            git tag -a $TAG -m "Release $TAG"
+                            
+                            # Push the tag using the token for authentication
+                            git push https://$GITHUB_TOKEN@github.com/<YOUR_USERNAME>/<YOUR_REPO>.git $TAG
+                        '''
+                    }
                 }
             }
         }

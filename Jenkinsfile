@@ -81,27 +81,40 @@ pipeline {
 
         stage('Release') {
             steps {
-                echo 'Release stage: App is live on Heroku!'
-            }
-        }
-
-        stage('Monitoring') {
-            steps {
-                echo 'Checking app health on Heroku...'
+                echo 'Releasing application...'
                 script {
-                    def status = sh(
-                        script: "curl -s -o /dev/null -w \"%{http_code}\" https://my-flask-crud-app.herokuapp.com/",
-                        returnStdout: true
-                    ).trim()
-                    
-                    if (status != '200') {
-                        error "App is down! Status code: ${status}"
-                    } else {
-                        echo "App is healthy. Status code: ${status}"
-                    }
+                    def commitHash = sh(returnStdout: true, script: "git rev-parse --short HEAD").trim()
+                    def version = new Date().format("yyyyMMdd-HHmmss") + "-" + commitHash
+
+                    sh "echo ${version} > version.txt"
+
+                    sh "git tag -a v${version} -m 'Release ${version}'"
+                    sh "git push origin v${version}"
+
+                    echo "Released version: ${version}"
                 }
             }
         }
+
+
+        stage('Monitoring') {
+            steps {
+                echo 'Monitoring application...'
+                script {
+                    def appUrl = "https://my-flask-crud-app.herokuapp.com"
+
+                    def statusCode = sh(returnStdout: true, script: "curl -o /dev/null -s -w '%{http_code}' ${appUrl}").trim()
+                    if (statusCode == "200") {
+                        echo "✅ Application is UP and healthy (HTTP 200)"
+                    } else {
+                        error("❌ Health check failed! Status code: ${statusCode}")
+                    }
+
+                    sh "heroku logs --tail --app my-flask-crud-app --num 50"
+                }
+            }
+        }
+
 
     }
 

@@ -67,10 +67,12 @@ pipeline {
         stage('Deploy') {
             steps {
                 withCredentials([string(credentialsId: 'HEROKU_API_KEY', variable: 'HEROKU_API_KEY')]) {
-                    sh """
-                    git remote add heroku https://heroku:${HEROKU_API_KEY}@git.heroku.com/my-flask-crud-app.git
-                    git push heroku HEAD:main -f
-                    """
+                    sh '''
+                        git remote remove heroku || true
+                        git remote add heroku https://heroku:${HEROKU_API_KEY}@git.heroku.com/my-flask-crud-app.git
+                        # Push HEAD explicitly to refs/heads/main
+                        git push heroku HEAD:refs/heads/main -f
+                    '''
                 }
             }
         }

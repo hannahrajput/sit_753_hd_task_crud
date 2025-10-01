@@ -79,26 +79,20 @@ pipeline {
             }
         }
 
-
-
         stage('Release') {
             steps {
-                withCredentials([string(credentialsId: 'GITHUB_TOKEN', variable: 'GITHUB_TOKEN')]) {
-                    script {
-                        sh '''
-                            git config user.email "jenkins@example.com"
-                            git config user.name "Jenkins CI"
-                            git rev-parse --short HEAD
-                            TAG="v$(date +%Y%m%d-%H%M%S)-$(git rev-parse --short HEAD)"
-                            git tag -a $TAG -m "Release $TAG"
-                            
-                            # Push the tag using the token for authentication
-                            git push https://$GITHUB_TOKEN@github.com/<YOUR_USERNAME>/<YOUR_REPO>.git $TAG
-                        '''
-                    }
+                script {
+                    def version = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+                    def releaseTag = "v${env.BUILD_ID}-${version}"
+                    echo "Releasing application version: ${releaseTag}"
+
+                    writeFile file: 'release_info.txt', text: "Release: ${releaseTag}\nBuild ID: ${env.BUILD_ID}\nCommit: ${version}"
+
+                    echo "Release tag ${releaseTag} created locally (no GitHub push)."
                 }
             }
         }
+
 
 
 

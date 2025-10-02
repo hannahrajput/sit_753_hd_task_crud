@@ -1,8 +1,10 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for
 from models import db, User
 import os
+from prometheus_flask_exporter import PrometheusMetrics
 
 app = Flask(__name__)
+metrics=PrometheusMetrics(app)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 

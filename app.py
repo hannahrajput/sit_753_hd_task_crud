@@ -3,6 +3,7 @@ from models import db, User
 import os
 from prometheus_flask_exporter import PrometheusMetrics
 
+
 app = Flask(__name__)
 metrics=PrometheusMetrics(app)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.db"

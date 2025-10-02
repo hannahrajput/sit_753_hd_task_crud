@@ -111,8 +111,7 @@ pipeline {
                         error("❌ Health check failed! Status code: ${statusCode}")
                     }
 
-                    sh "echo 'app_health_status 1' | curl --data-binary @- http://prometheus-pushgateway:9091/metrics/job/app_monitoring
-
+                    sh "echo 'app_health_status 1' | curl --data-binary @- http://prometheus-pushgateway:9091/metrics/job/app_monitoring"
                 }
             }
         }
